@@ -1,6 +1,4 @@
 
-
-
 rDict = {
 'I':1, 
 'V':5, 
@@ -11,38 +9,71 @@ rDict = {
 'M':1000
 }
 
+initialMessage = "Enter the number you want translated. Limit between 1-5000:"
+numberHigh = "Please enter a number between 1-5000"
+noZero = "The Romans did not have the concept of Zero!"
+notRoman = "This is not a roman numeral. Please enter an interger >= 5000 OR a string including only characters from the following list: I, V, X, L, C, D, and/or M"
+fewer = "Please enter fewer than 17 characters"
 
 def sanitizeInput(userInput):
-	# sanitize user input
-	nums = userInput.upper()
-	nums = list(nums)
+	# check for int
+	try: 
+		userInput = int(userInput)
+		ToRomanNums(userInput)
 
-	fromRoman = True
-	toRoman = True
+	except:
+		# sanitize user input
+		nums = userInput.upper()
+		nums = list(nums)
 
-	# check that the number entered is not too large; the longest roman numeral under 5000 is 16 characters long
-	if len(nums) > 16: 
-		print("Please enter a number between 1-5000")
-		# quit if number does not conform to requirements
+		toRoman = True
+
+		# check that the number entered is not too large; the longest roman numeral under 5000 is 16 characters long
+		if len(nums) > 16: 
+			print(fewer)
+			# quit if number does not conform to requirements
+			return
+
+		if Roman(nums): 
+			print(romanTranslator(translateList(nums)))
+			return
+		else: 
+			print(notRoman)
+
+			 
+
+def ToRomanNums(num):
+	if num > 5000: 
+		print(numberHigh)
+		return
+	if num == 0: 
+		print(noZero)
 		return
 
+	print('Arabic Number %s' %num)
+	return
+
+
+def Roman(nums): 
 	# check if all char are roman numerals
+	fromRoman = True
 	for num in nums:
 		if num in rDict: 
 			fromRoman *= True
 		else:
 			fromRoman *= False
-			#if not roman numeral, check if INT
-			try: 
-				int(nums)
-			except: 
-				print("Please enter roman numberals (I,V,X,L,C,D or M) or an integer.")
+	return fromRoman
 
-	if fromRoman == True:
-		romanTranslator(nums) 
+
+def translateList(userList):
+	# replaces all items in list with ints from rDict
+	for i, item in enumerate(userList):
+		userList[i] = rDict[item]
+	return userList
 
 
 def romanTranslator(userInput): 
+	# after translating list
 	# if the input passes sanitation only
 	total = 0
 	length = len(userInput)
@@ -50,32 +81,23 @@ def romanTranslator(userInput):
 
 	while i < length: 
 		if i == (length - 1): 
-			total += rDict[userInput[i]]
+			total += userInput[i]
 		# roman numerals only have 1 charcter less: ex 8 is VIII rather than IIX
-		# TODO: This is the bullshit right here
-		elif userInput[i] < userInput[(i+1)]:
-			print(i)
-			print("user input i is %s" % rDict[userInput[i]])
-			print("user input i+1 is %s" % rDict[userInput[i+1]])
-			print( rDict[userInput[i]] >  rDict[userInput[i+1]])
-			total -= rDict[userInput[i]]
+		elif (userInput[i] < userInput[(i+1)]):
+			total -= userInput[i]
 			# if (rDict[userInput[i]] % 10): 
 			# 	print("V, L, and D are never used to reduce roman numerals.")
 			# 	return
 
 		else: 
-			total += rDict[userInput[i]]
-			print(i)
-			print("user input i is %s" % rDict[userInput[i]])
-			print("user input i+1 is %s" % rDict[userInput[i+1]])
-			print( rDict[userInput[i]] >  rDict[userInput[i+1]])
+			total += userInput[i]
 		i+=1
 
-	print(total)
+	return(total)
 
 
 	 
 
 
-userInput = raw_input("Enter the number you want translated. Limit between 1-5000:")
+userInput = raw_input(initialMessage)
 sanitizeInput(userInput)

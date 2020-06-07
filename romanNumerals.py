@@ -9,19 +9,24 @@ rDict = {
 'M':1000
 }
 
-initialMessage = "Enter the number you want translated. Limit between 1-5000:"
-numberHigh = "Please enter a number between 1-5000"
+# make exposed user strings easier to find/edit
+initialMessage = "Enter the number you want translated. Limit between 1-9999:"
+numberHigh = "Please enter a number between 1-9999"
 noZero = "The Romans did not have the concept of Zero!"
-notRoman = "This is not a roman numeral. Please enter an interger >= 5000 OR a string including only characters from the following list: I, V, X, L, C, D, and/or M"
-fewer = "Please enter fewer than 17 characters"
+notRoman = "This is not a roman numeral. Please enter an interger >= 9999 OR a string including up to 21 characters from the following list: I, V, X, L, C, D, and/or M"
+fewer = "Please enter fewer than 21 characters"
 
 def sanitizeInput(userInput):
-	# check for int
 	try: 
 		userInput = int(userInput)
-		ToRomanNums(userInput)
-
-	except:
+		if (userInput==0):
+			print(noZero) 
+			return
+		print(ToRomanNums(userInput))
+	except: 
+		if (userInput is ''): 
+			print(noZero)
+			return
 		# sanitize user input
 		nums = userInput.upper()
 		nums = list(nums)
@@ -29,7 +34,7 @@ def sanitizeInput(userInput):
 		toRoman = True
 
 		# check that the number entered is not too large; the longest roman numeral under 5000 is 16 characters long
-		if len(nums) > 16: 
+		if len(nums) > 21: 
 			print(fewer)
 			# quit if number does not conform to requirements
 			return
@@ -43,18 +48,26 @@ def sanitizeInput(userInput):
 			 
 
 def ToRomanNums(num):
-	if num > 5000: 
-		print(numberHigh)
-		return
-	if num == 0: 
-		print(noZero)
-		return
+	print("Got to RomanNums")
+	romanNumeral = ''
+	ValueDict = sorted(rDict.items(), key=lambda x: x[1], reverse=True)
+	# if the number is divisible by the dictionary value, replace with dictionary key * how much it's divisible by
+	i = 0
+	while i < len(ValueDict):
+		pair = ValueDict[i]
+		mult = num/pair[1]
+		if (mult > 0): 
+			romanNumeral = romanNumeral + (pair[0] *  mult)
+			num = num%pair[1]
+		#TODO: how to handle 9s? 
+		i +=1 
 
-	print('Arabic Number %s' %num)
-	return
+	return(romanNumeral)
+
 
 
 def Roman(nums): 
+	# TODO: need something to ensure users don't use V, L or D to reduce the number
 	# check if all char are roman numerals
 	fromRoman = True
 	for num in nums:
@@ -85,10 +98,6 @@ def romanTranslator(userInput):
 		# roman numerals only have 1 charcter less: ex 8 is VIII rather than IIX
 		elif (userInput[i] < userInput[(i+1)]):
 			total -= userInput[i]
-			# if (rDict[userInput[i]] % 10): 
-			# 	print("V, L, and D are never used to reduce roman numerals.")
-			# 	return
-
 		else: 
 			total += userInput[i]
 		i+=1

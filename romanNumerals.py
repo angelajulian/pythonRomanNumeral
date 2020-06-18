@@ -9,21 +9,33 @@ rDict = {
 'M':1000
 }
 
+# look into why dictionary didn't work- pain to have duplicated list item 
+rlist = ['M', 'IM', 'XM', 'CM', 'D', 'ID', 'XD', 'CD', 'C', 'IC', 'XC', 'L', 'IL', 'XL', 'X', 'IX', 'V', 'IV', 'I']
+numlist = [1000, 999, 990, 900, 500, 499, 490, 400, 100, 99, 90, 50, 49, 40, 10, 9, 5, 4, 1]
+
 # make exposed user strings easier to find/edit
-initialMessage = "Enter the number you want translated. Limit between 1-9999:"
-numberHigh = "Please enter a number between 1-9999"
-noZero = "The Romans did not have the concept of Zero!"
-notRoman = "This is not a roman numeral. Please enter an interger >= 9999 OR a string including up to 21 characters from the following list: I, V, X, L, C, D, and/or M"
+initialMessage = "Enter the number you want translated. Limit between 1-4999:"
+numberHigh = "Please enter a number between 1-4999"
+noZero = "The Romans did not have the concept of Zero, or less than Zero!"
+notRoman = "This is not a roman numeral. Please enter an interger >=4999 OR a string from the following list: I, V, X, L, C, D, and/or M"
 fewer = "Please enter fewer than 21 characters"
 
+
+# Functions which get and sanitize input
 def sanitizeInput(userInput):
 	try: 
 		userInput = int(userInput)
-		if (userInput==0):
+		if (userInput<=0):
 			print(noZero) 
 			return
-		print(ToRomanNums(userInput))
-	except: 
+		if (userInput>4999): 
+			print(numberHigh)
+		ToRomanNums(userInput)
+	except Exception as e: 
+		confirmRoman(userInput)
+
+
+def confirmRoman(userInput):
 		if (userInput is ''): 
 			print(noZero)
 			return
@@ -45,25 +57,20 @@ def sanitizeInput(userInput):
 		else: 
 			print(notRoman)
 
-			 
-
-def ToRomanNums(num):
-	print("Got to RomanNums")
-	romanNumeral = ''
-	ValueDict = sorted(rDict.items(), key=lambda x: x[1], reverse=True)
-	# if the number is divisible by the dictionary value, replace with dictionary key * how much it's divisible by
+def ToRomanNums(userInput):
 	i = 0
-	while i < len(ValueDict):
-		pair = ValueDict[i]
-		mult = num/pair[1]
-		if (mult > 0): 
-			romanNumeral = romanNumeral + (pair[0] *  mult)
-			num = num%pair[1]
-		#TODO: how to handle 9s? 
-		i +=1 
-
-	return(romanNumeral)
-
+	outputString = ''
+	# for each num in numlist
+	while i < len(numlist):
+		# try to divide userInput by num
+		mult = userInput/numlist[i]
+		# if user input is divisible by num
+		if mult: 
+			userInput -= (mult * numlist[i])
+			# add the roman numeral times however many times num goes into user input
+			outputString = outputString + (rlist[i]*mult)
+		i += 1
+	print(outputString)
 
 
 def Roman(nums): 
@@ -79,6 +86,7 @@ def Roman(nums):
 
 
 def translateList(userList):
+	# takes a list of chars from rDict
 	# replaces all items in list with ints from rDict
 	for i, item in enumerate(userList):
 		userList[i] = rDict[item]
@@ -86,6 +94,7 @@ def translateList(userList):
 
 
 def romanTranslator(userInput): 
+	# takes a list of ints
 	# after translating list
 	# if the input passes sanitation only
 	total = 0
@@ -104,8 +113,6 @@ def romanTranslator(userInput):
 
 	return(total)
 
-
-	 
 
 
 userInput = raw_input(initialMessage)
